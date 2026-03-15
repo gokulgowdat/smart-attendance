@@ -23,33 +23,30 @@ The system is decoupled into four specific hardware nodes:
 
 In a professional campus-wide deployment, the system follows a **Centralized Edge Architecture**. This removes the burden of processing from the teacher's device and ensures 24/7 availability. 
 
-### Estimated Cost for a Single Classroom Deployment
+The following model evaluates the investment required for a medium-sized campus deployment of 50 rooms.
 
 | Component | Professional Specification | Purpose | Estimated Cost (INR) |
 | :--- | :--- | :--- | :--- |
-| **Edge Server Node** | Dedicated Mini-PC (Intel i5/Ryzen 5, 16GB RAM) | Centralized AI processing & Database hosting. | ₹35,000 - ₹45,000 |
-| **PoE Sensor Node** | 4MP Wide-Angle PoE IP Camera | High-definition facial data capture. | ₹4,000 - ₹6,500 |
-| **Network Backbone** | PoE Switch & Cat6 Cabling | Powering the camera & high-speed data transfer. | ₹3,000 - ₹5,000 |
-| **Mounting & Infrastructure** | Wall mounts & Conduit pipes | Permanent, tamper-proof installation. | ₹1,500 - ₹2,500 |
-| **Total Deployment Cost** | **Professional Grade Setup** | **Scalable Campus Infrastructure** | **₹43,500 - ₹59,000** |
-
+| **Central AI Server** | High-core CPU, 64GB RAM, **NVIDIA RTX 4070 GPU** | Centralized high-speed AI inference & Database hosting. | ₹1,50,000 |
+| **PoE Sensor Nodes** | 4MP Wide Dynamic Range (WDR) PoE IP Dome Cameras | Capturing high-definition facial data from 50 rooms (₹4,000 x 50). | ₹2,00,000 |
+| **Network Infrastructure** | 24-Port PoE Switches & Category 6 (Cat6) Cabling | Providing power and data connectivity over a Star Topology. | ₹60,000 |
+| **Total Campus Investment** | **Full 50-Room Professional Deployment** | **Scalable, Enterprise-Grade Infrastructure.** | **₹4,10,000** |
+> **Note on Scalability:** In this centralized model, adding additional classrooms is highly cost-effective, requiring only the purchase of a single camera (~₹4,000) rather than a full computing module per room.
 ---
 
 ## 🧱 Why These Components are Necessary
 
+### 1. The NVIDIA RTX 4070 "Smart Core"
+The **NVIDIA RTX 4070** is the operational linchpin of the system. Equipped with 4th-generation Tensor cores, it executes the dense matrix multiplications required for **YOLOv8** (crowd detection) and **Face Recognition** (encoding matching) asynchronously across dozens of classrooms. Without this dedicated GPU, CPU-only processing would result in massive latency, rendering a large-scale system unusable for simultaneous lectures.
 
-
-### 1. Dedicated Edge Server
-While a personal laptop can run a simulation, a real-world system requires a **Dedicated Edge Server**. This server remains physically in the department or classroom, allowing it to handle heavy YOLOv8 matrix multiplications 24/7 without overheating or interrupting a professor's personal work. It acts as the local "Brain" that keeps data within the campus network, ensuring low latency and high privacy.
-
-### 2. PoE (Power over Ethernet) Sensor Nodes
-For a permanent setup, we use **PoE IP Cameras** instead of wireless devices. PoE is critical because it carries both power and high-speed data over a single Ethernet cable. This eliminates the need for electrical outlets near the ceiling and ensures the video stream is never interrupted by Wi-Fi interference or battery death, which is vital for accurate AI detection.
+### 2. High-Resolution PoE Sensor Nodes
+Real-world deployment necessitates **Power over Ethernet (PoE) IP Cameras**. These sensors use H.265 compression to transmit high-definition 4MP frames while consuming minimal bandwidth. PoE is critical because it carries both power and data over a single Ethernet cable, ensuring the system is immune to Wi-Fi instability and eliminating the need for electrical outlets at every ceiling-mounted camera point.
 
 ### 3. Gigabit Network Backbone
-A smart attendance system is only as fast as its slowest link. Because we are transmitting high-definition frames for facial analysis, a **Gigabit Switch** and **Cat6 cabling** are necessary to prevent "packet loss" or frame lag. This ensures the AI Engine receives crystal-clear images in real-time for immediate processing.
+A professional **Star Network topology** utilizing Cat6 cabling and a 1 Gigabit Ethernet uplink is required to aggregate traffic from multiple floors. This backbone prevents network saturation even if all 50 classrooms trigger attendance sessions simultaneously, ensuring the central server receives clear video streams without frame loss or lag.
 
-### 4. Centralized BYOD Mobile Client (The APK)
-The Android application allows the system to remain "headless." The professor does not need to interact with the server directly. By using their own mobile device to trigger the session, the system achieves a **Bring Your Own Device (BYOD)** efficiency—reducing hardware costs for the college while providing a familiar, easy-to-use interface for the faculty.
+### 4. Frictionless BYOD Mobile Integration
+The **Bring Your Own Device (BYOD)** approach utilizes the professor’s smartphone as a secure authentication and trigger mechanism. This eliminates the need for expensive, unhygienic wall-mounted biometric terminals. By shifting to "passive observation" via overhead cameras, the system eradicates the queuing bottlenecks inherent to traditional biometric kiosks.
 ---
 
 ## 💻 The Ultimate Setup Guide (From Scratch)
