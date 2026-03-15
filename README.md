@@ -17,17 +17,39 @@ The system is decoupled into four specific hardware nodes:
 
 ---
 
-## 🛠️ Physical Deployment & Estimated Cost
+---
 
-To deploy this physically in a real-world classroom, the cost is drastically lower than traditional biometric scanners.
+## 🏗️ Real-World Deployment & Cost Analysis
 
-| Component | Description | Estimated Cost (USD) | Estimated Cost (INR) |
+In a professional campus-wide deployment, the system follows a **Centralized Edge Architecture**. This removes the burden of processing from the teacher's device and ensures 24/7 availability. 
+
+### Estimated Cost for a Single Classroom Deployment
+
+| Component | Professional Specification | Purpose | Estimated Cost (INR) |
 | :--- | :--- | :--- | :--- |
-| **Edge Server** | The professor's existing laptop or a dedicated classroom mini-PC. | $0 (BYOD) - $150 | ₹0 - ₹12,000 |
-| **Sensor Node** | An old Android smartphone running DroidCam on a tripod. | $0 - $40 | ₹0 - ₹3,500 |
-| **Local Network** | A basic Wi-Fi router to handle the heavy local video stream locally. | $25 | ₹2,000 |
-| **Total Startup Cost** | A complete, isolated local network setup. | **~$25 - $215** | **₹2,000 - ₹17,500** |
+| **Edge Server Node** | Dedicated Mini-PC (Intel i5/Ryzen 5, 16GB RAM) | Centralized AI processing & Database hosting. | ₹35,000 - ₹45,000 |
+| **PoE Sensor Node** | 4MP Wide-Angle PoE IP Camera | High-definition facial data capture. | ₹4,000 - ₹6,500 |
+| **Network Backbone** | PoE Switch & Cat6 Cabling | Powering the camera & high-speed data transfer. | ₹3,000 - ₹5,000 |
+| **Mounting & Infrastructure** | Wall mounts & Conduit pipes | Permanent, tamper-proof installation. | ₹1,500 - ₹2,500 |
+| **Total Deployment Cost** | **Professional Grade Setup** | **Scalable Campus Infrastructure** | **₹43,500 - ₹59,000** |
 
+---
+
+## 🧱 Why These Components are Necessary
+
+
+
+### 1. Dedicated Edge Server
+While a personal laptop can run a simulation, a real-world system requires a **Dedicated Edge Server**. This server remains physically in the department or classroom, allowing it to handle heavy YOLOv8 matrix multiplications 24/7 without overheating or interrupting a professor's personal work. It acts as the local "Brain" that keeps data within the campus network, ensuring low latency and high privacy.
+
+### 2. PoE (Power over Ethernet) Sensor Nodes
+For a permanent setup, we use **PoE IP Cameras** instead of wireless devices. PoE is critical because it carries both power and high-speed data over a single Ethernet cable. This eliminates the need for electrical outlets near the ceiling and ensures the video stream is never interrupted by Wi-Fi interference or battery death, which is vital for accurate AI detection.
+
+### 3. Gigabit Network Backbone
+A smart attendance system is only as fast as its slowest link. Because we are transmitting high-definition frames for facial analysis, a **Gigabit Switch** and **Cat6 cabling** are necessary to prevent "packet loss" or frame lag. This ensures the AI Engine receives crystal-clear images in real-time for immediate processing.
+
+### 4. Centralized BYOD Mobile Client (The APK)
+The Android application allows the system to remain "headless." The professor does not need to interact with the server directly. By using their own mobile device to trigger the session, the system achieves a **Bring Your Own Device (BYOD)** efficiency—reducing hardware costs for the college while providing a familiar, easy-to-use interface for the faculty.
 ---
 
 ## 💻 The Ultimate Setup Guide (From Scratch)
