@@ -47,6 +47,7 @@ A professional **Star Network topology** utilizing Cat6 cabling and a 1 Gigabit 
 
 ### 4. Frictionless BYOD Mobile Integration
 The **Bring Your Own Device (BYOD)** approach utilizes the professor’s smartphone as a secure authentication and trigger mechanism. This eliminates the need for expensive, unhygienic wall-mounted biometric terminals. By shifting to "passive observation" via overhead cameras, the system eradicates the queuing bottlenecks inherent to traditional biometric kiosks.
+
 ---
 
 ## 💻 The Ultimate Setup Guide (From Scratch)
