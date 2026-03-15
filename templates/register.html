@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="max-width: 450px;">
+    <h2 style="margin-top: 0; text-align: center;">Register Account</h2>
+    
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="error">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" enctype="multipart/form-data">
+        <label>Full Name</label>
+        <input type="text" name="name" placeholder="Prof. Jane Doe" required>
+        
+        <label>Username (Used for Login)</label>
+        <input type="text" name="username" placeholder="janedoe" required>
+        
+        <label>Password</label>
+        <input type="password" name="password" required>
+        
+        <label>Upload ID Photo (For AI Recognition)</label>
+        <input type="file" name="photo" accept="image/*" required style="border: none; padding: 0;">
+        
+        <button type="submit" style="background-color: #2563eb;">Create Account</button>
+    </form>
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="/" style="color: #6b7280; text-decoration: none;">← Back to Login</a>
+    </div>
+</div>
+{% endblock %}

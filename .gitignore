@@ -1,0 +1,19 @@
+# Python Virtual Environment
+venv/
+
+# Python Cache Files
+__pycache__/
+*.pyc
+
+# Private Database (Keeps your actual attendance records hidden)
+attendance_v2.db
+
+# Private Images (Completely blocks the folder and all student/faculty photos inside it)
+known_faces/
+
+# Heavy AI Model Weights (Users will download this themselves using your download script)
+yolov8n-face.pt
+
+# OS generated files (Just in case)
+.DS_Store
+Thumbs.db

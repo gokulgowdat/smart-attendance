@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="max-width: 400px; margin-top: 10vh;">
+    <h2 style="text-align: center; margin-top: 0;">Faculty BYOD Portal</h2>
+    
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="error">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <label>Username</label>
+        <input type="text" name="username" required>
+        
+        <label>Password</label>
+        <input type="password" name="password" required>
+        
+        <button type="submit" style="background-color: #2563eb;">Log In</button>
+    </form>
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <p>New to the system?</p>
+        <a href="/register" style="color: #2563eb; font-weight: bold; text-decoration: none;">Create an Account</a>
+    </div>
+</div>
+{% endblock %}

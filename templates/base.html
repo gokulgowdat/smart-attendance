@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Attendance BYOD</title>
+    <style>
+        /* Light Mode (Default) */
+        :root {
+            --bg-color: #f3f4f6;
+            --text-color: #1f2937;
+            --card-bg: white;
+            --nav-bg: #2563eb;
+            --nav-text: white;
+            --border-color: #d1d5db;
+            --input-bg: white;
+            --input-text: #1f2937;
+        }
+
+        /* Dark Mode Overrides */
+        body.dark {
+            --bg-color: #111827;
+            --text-color: #f9fafb;
+            --card-bg: #1f2937;
+            --nav-bg: #1e3a8a;
+            --border-color: #4b5563;
+            --input-bg: #374151;
+            --input-text: #f9fafb;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding-bottom: 40px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Upgraded Mobile-First Navigation Bar */
+        nav {
+            background-color: var(--nav-bg);
+            padding: 10px;
+            display: flex;
+            flex-direction: column; /* Stack the two groups on mobile */
+            gap: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; /* Allows buttons to wrap to the next line smoothly */
+            gap: 8px;
+        }
+
+        nav a {
+            color: var(--nav-text);
+            text-decoration: none;
+            padding: 8px 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+        
+        nav a:hover { 
+            background-color: rgba(255, 255, 255, 0.3); 
+        }
+
+        /* Rest of the CSS remains the same */
+        .container {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 20px auto;
+            width: 90%;
+            box-sizing: border-box;
+        }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        input, select, textarea {
+            width: 100%; padding: 0.75rem; margin-bottom: 1.2rem;
+            border: 1px solid var(--border-color); border-radius: 5px;
+            background-color: var(--input-bg); color: var(--input-text);
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%; padding: 1rem; background-color: #10b981;
+            color: white; border: none; border-radius: 5px; font-size: 1.1rem;
+            cursor: pointer; font-weight: bold;
+        }
+        button:hover { background-color: #059669; }
+        .error { color: #ef4444; text-align: center; font-weight: bold; margin-bottom: 1rem;}
+        .success { color: #10b981; text-align: center; font-weight: bold; margin-bottom: 1rem;}
+    </style>
+</head>
+<body class="{{ theme }}">
+
+    {% if session.get('faculty_id') %}
+    <nav>
+        <div class="nav-group">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/history">History</a>
+            <a href="/student_history">Lookup</a>
+            <a href="/profile">Profile</a>
+        </div>
+        <div class="nav-group">
+            <a href="/toggle_theme" style="background-color: #3b82f6;">🌓 Theme</a>
+            <a href="/logout" style="background-color: #ef4444;">Logout</a>
+        </div>
+    </nav>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>

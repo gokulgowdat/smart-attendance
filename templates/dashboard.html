@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 style="margin-top: 0;">Session Setup</h2>
+    <div style="margin-bottom: 20px; font-size: 1.1rem;">Welcome, {{ faculty_name }}</div>
+
+    <form method="POST">
+        <label>Academic Year</label>
+        <select name="year" required>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+        </select>
+
+        <label>Sections (Select Multiple if needed)</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 1.2rem;">
+            <label style="font-weight: normal;"><input type="checkbox" name="section" value="A"> A</label>
+            <label style="font-weight: normal;"><input type="checkbox" name="section" value="B"> B</label>
+            <label style="font-weight: normal;"><input type="checkbox" name="section" value="C"> C</label>
+            <label style="font-weight: normal;"><input type="checkbox" name="section" value="D"> D</label>
+            <label style="font-weight: normal;"><input type="checkbox" name="section" value="E"> E</label>
+            <label style="font-weight: normal;"><input type="checkbox" name="section" value="F"> F</label>
+            <label style="font-weight: normal;"><input type="checkbox" name="section" value="G"> G</label>
+            <label style="font-weight: normal;"><input type="checkbox" name="section" value="H"> H</label>
+        </div>
+
+        <label>Subject</label>
+        <input type="text" name="subject" placeholder="e.g. Data Structures" required>
+
+        <div style="display: flex; gap: 10px;">
+            <div style="flex: 1;">
+                <label>Room No.</label>
+                <input type="text" name="room" placeholder="e.g. 302" required>
+            </div>
+            <div style="flex: 1;">
+                <label>Block</label>
+                <input type="text" name="block" placeholder="e.g. Main Block" required>
+            </div>
+        </div>
+
+        <label>Period Number</label>
+        <select name="period" required>
+            <option value="1">1</option><option value="2">2</option>
+            <option value="3">3</option><option value="4">4</option>
+            <option value="5">5</option><option value="6">6</option>
+        </select>
+
+        <button type="submit">Start Attendance</button>
+    </form>
+</div>
+{% endblock %}

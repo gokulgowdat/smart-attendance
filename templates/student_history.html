@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="max-width: 700px;">
+    <h2 style="margin-top: 0;">Student Lookup</h2>
+    <p style="color: #6b7280; margin-bottom: 20px;">Enter a student's Roll Number to view their attendance history across all classes.</p>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="error">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" style="display: flex; gap: 10px; margin-bottom: 30px;">
+        <input type="text" name="search_query" placeholder="e.g., 25EE042" required style="margin: 0; flex: 1;">
+        <button type="submit" style="width: auto; padding: 0.75rem 1.5rem; background-color: #3b82f6;">Search</button>
+    </form>
+
+    {% if student %}
+    <div style="background-color: var(--bg-color); padding: 20px; border-radius: 8px; margin-bottom: 30px; display: flex; align-items: center; gap: 20px; border: 1px solid var(--border-color);">
+        <img src="/static/known_faces/students/{{ student.label }}.jpg" alt="Student Photo" 
+             style="width: 100px; height: 100px; border-radius: 10px; object-fit: cover;"
+             onerror="this.src='https://via.placeholder.com/100?text=No+Photo'">
+        
+        <div>
+            <h3 style="margin: 0 0 5px 0; color: var(--text-color);">{{ student.name }}</h3>
+            <p style="margin: 3px 0; color: #6b7280; font-weight: bold;">Roll No: {{ student.roll }}</p>
+            <p style="margin: 3px 0; color: #6b7280;">Year {{ student.year }}, Section {{ student.section }}</p>
+        </div>
+    </div>
+
+    <h3 style="margin-bottom: 10px;">Detailed History</h3>
+    {% if records %}
+        <div style="border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <tr style="background-color: var(--nav-bg); color: var(--nav-text);">
+                    <th style="padding: 12px; border-bottom: 1px solid var(--border-color);">Date & Time</th>
+                    <th style="padding: 12px; border-bottom: 1px solid var(--border-color);">Subject</th>
+                    <th style="padding: 12px; border-bottom: 1px solid var(--border-color);">Room</th>
+                    <th style="padding: 12px; border-bottom: 1px solid var(--border-color);">Status</th>
+                </tr>
+                {% for record in records %}
+                <tr style="background-color: var(--card-bg); border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 12px;">{{ record.date }}</td>
+                    <td style="padding: 12px; font-weight: bold;">{{ record.subject }}</td>
+                    <td style="padding: 12px;">{{ record.room }}</td>
+                    <td style="padding: 12px;">
+                        {% if record.status == 'Present' %}
+                            <span style="color: #10b981; font-weight: bold;">Present</span>
+                        {% else %}
+                            <span style="color: #ef4444; font-weight: bold;">Absent</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% else %}
+        <p style="color: #6b7280;">This student has not been assigned to any completed sessions yet.</p>
+    {% endif %}
+    {% endif %}
+
+</div>
+{% endblock %}
