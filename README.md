@@ -11,7 +11,7 @@ Instead of relying on expensive cloud computing or massive centralized servers, 
 The system is divided into four completely decoupled nodes:
 
 1. **The Edge Server (Laptop/PC):** The brain. Runs the Python Flask backend, the SQLite database, and the YOLOv8 FaceEngineV2.
-2. **The Sensor Node (Camera):** A localized eye. A smartphone running an IP Webcam (or a dedicated PoE Camera) streaming video over the local LAN to the Edge Server. 
+2. **The Sensor Node (Camera):** A localized eye. A smartphone running an IP Webcam (or a dedicated PoE Camera) streaming video over the local LAN to the Edge Server. For this simulation, you can use DROIDCAM 
 3. **The Cloud Bridge (Ngrok/Local DNS):** A secure tunnel that exposes the Edge Server's port to the public internet.
 4. **The Client Node (Android APK):** A lightweight native wrapper that connects to the Cloud Bridge. The professor acts as the admin, starting sessions and verifying AI results via their mobile device.
 
@@ -37,29 +37,41 @@ To deploy this physically in a real-world classroom, the cost is drastically low
 Want to run this simulation on your own machine? Follow these exact steps.
 
 ### 1. Clone the Repository
+```bash
 git clone [https://github.com/YOUR_GITHUB_USERNAME/smart-attendance.git](https://github.com/YOUR_GITHUB_USERNAME/smart-attendance.git)
 cd smart-attendance
+```
 
 ### 2. Setup the Virtual Environment
+```bash
 python3 -m venv venv
 source venv/bin/activate  # On Windows use: venv\Scripts\activate
+```
 
 ### 3. Install Dependencies
+```bash
 pip install flask opencv-python ultralytics werkzeug
-
+```
 
 ### 4. Download the AI Weights
+```bash
 python3 download_yolo_face.py
+```
 
 ### 5. Initialize the Database
-Generate a fresh SQLite database and the necessary image directories (known_faces/students and known_faces/faculty):
+Generate a fresh SQLite database and the necessary image directories (`known_faces/students` and `known_faces/faculty`):
+```bash
 python3 setup_db_v2.py
+```
 
 ### 6. Boot the System
-Step A: Open your IP Webcam/DroidCam app on your phone, note the local IP address, and update the CAMERA_URL variable inside web_app.py.
-Step B: Start the main server:
+**Step A:** Open your IP Webcam/DroidCam app on your phone, note the local IP address, and update the `CAMERA_URL` variable inside `web_app.py`.
+
+**Step B:** Start the main server:
+```bash
 python3 web_app.py
+```
 
-Step C: Access the admin panel in your browser at http://localhost:5000, register a faculty account, upload your photo, and start your first AI session!
+**Step C:** Access the admin panel in your browser at `http://localhost:5000`, register a faculty account, upload your photo, and start your first AI session!
 
-(Optional: To make the web app accessible globally on a mobile phone, run ngrok http 5000 in a separate terminal and use the generated forwarding URL).
+*(Optional: To make the web app accessible globally on a mobile phone, run `ngrok http 5000` in a separate terminal and use the generated forwarding URL).*
