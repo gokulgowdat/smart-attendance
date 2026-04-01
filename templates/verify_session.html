@@ -1,79 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Attendance - Verify</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f3f4f6; margin: 0; padding: 20px;
-        }
-        .container {
-            background-color: white; padding: 2rem; border-radius: 10px; 
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); max-width: 600px; margin: 0 auto;
-        }
-        h2 { color: #1f2937; margin-top: 0; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
-        
-        .student-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 0; border-bottom: 1px solid #e5e7eb; cursor: pointer;
-        }
-        .student-row:hover { background-color: #f9fafb; }
-        .student-info { display: flex; flex-direction: column; }
-        .student-name { font-weight: bold; color: #111827; }
-        .student-details { font-size: 0.85rem; color: #6b7280; margin-top: 4px; }
-        
-        /* Custom Checkbox Toggle Styling */
-        .checkbox-wrapper { display: flex; align-items: center; gap: 10px; }
-        .status-text { font-weight: bold; font-size: 0.9rem; width: 60px; text-align: right; }
-        .present-text { color: #10b981; }
-        .absent-text { color: #ef4444; }
-        
-        input[type="checkbox"] {
-            width: 20px; height: 20px; cursor: pointer; accent-color: #10b981;
-        }
+{% extends "base.html" %}
 
-        button {
-            width: 100%; padding: 1rem; background-color: #3b82f6; color: white; 
-            border: none; border-radius: 5px; font-size: 1.1rem; cursor: pointer; 
-            font-weight: bold; margin-top: 25px;
-        }
-        button:hover { background-color: #2563eb; }
-    </style>
-</head>
-<body>
+{% block content %}
+<div class="container" style="background-color: var(--card-bg); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 800px; margin: 20px auto; border: 1px solid var(--border-color); color: var(--text-color);">
+    <h2 style="margin-top: 0; color: #0097e6;">Verify Attendance</h2>
+    <p style="color: var(--text-color); opacity: 0.8; margin-bottom: 20px;">Review the AI's detections below. You can manually check or uncheck students before saving the final list.</p>
 
-<div class="container">
-    <h2>Verify Attendance</h2>
-    <p style="color: #4b5563; margin-bottom: 20px;">
-        Review the AI-generated list. Uncheck a box to mark a student absent, or check it to manually override as present.
-    </p>
-
-    <form method="POST" action="/finalize_session">
+    <form action="/finalize_session" method="POST">
         
-        {% for student in attendance_data %}
-        <label class="student-row">
-            <div class="student-info">
-                <span class="student-name">{{ student.name }} ({{ student.roll }})</span>
-                <span class="student-details">Last Seen: {{ student.last_seen }}</span>
-            </div>
-            
-            <div class="checkbox-wrapper">
-                <span class="status-text {% if student.status == 'Present' %}present-text{% else %}absent-text{% endif %}">
-                    {{ student.status }}
-                </span>
-                <input type="checkbox" name="present_students" value="{{ student.label }}" 
-                       {% if student.status == 'Present' %}checked{% endif %}
-                       onchange="this.previousElementSibling.textContent = this.checked ? 'Present' : 'Absent'; 
-                                 this.previousElementSibling.className = this.checked ? 'status-text present-text' : 'status-text absent-text';">
-            </div>
-        </label>
-        {% endfor %}
+        <div style="border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); margin-bottom: 25px;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead style="background: rgba(0, 151, 230, 0.1);">
+                    <tr>
+                        <th style="padding: 15px; border-bottom: 2px solid var(--border-color); color: var(--text-color);">Roll No.</th>
+                        <th style="padding: 15px; border-bottom: 2px solid var(--border-color); color: var(--text-color);">Student Name</th>
+                        <th style="padding: 15px; border-bottom: 2px solid var(--border-color); color: var(--text-color);">AI Status</th>
+                        <th style="padding: 15px; border-bottom: 2px solid var(--border-color); text-align: center; color: var(--text-color);">Mark Present</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in attendance_data %}
+                    <tr style="border-bottom: 1px solid var(--border-color); background-color: {{ 'rgba(39, 174, 96, 0.05)' if student.status == 'Present' else 'transparent' }};">
+                        
+                        <td style="padding: 15px; font-weight: bold; color: var(--text-color);">{{ student.roll }}</td>
+                        <td style="padding: 15px; color: var(--text-color);">{{ student.name }}</td>
+                        
+                        <td style="padding: 15px;">
+                            {% if student.status == 'Present' %}
+                                <span style="color: #27ae60; font-weight: bold;">Detected ({{ student.last_seen }})</span>
+                            {% else %}
+                                <span style="color: #e74c3c; font-weight: bold;">Not Detected</span>
+                            {% endif %}
+                        </td>
+                        
+                        <td style="padding: 15px; text-align: center;">
+                            <input type="checkbox" name="present_students" value="{{ student.label }}" 
+                                   style="width: 25px !important; height: 25px !important; margin: auto; padding: 0 !important; display: block; cursor: pointer; box-shadow: none;" 
+                                   {% if student.status == 'Present' %}checked{% endif %}>
+                        </td>
 
-        <button type="submit">Lock & Submit Final Data</button>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <button type="submit" style="width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1.1rem;">Save Final Attendance</button>
     </form>
 </div>
-
-</body>
-</html>
+{% endblock %}

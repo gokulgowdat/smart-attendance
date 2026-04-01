@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sensor Node - Gestures</title>
+    <style>
+        /* touch-action: none is CRITICAL here so the browser doesn't try to natively scroll or zoom */
+        body, html { margin: 0; padding: 0; background: #000; overflow: hidden; height: 100%; font-family: sans-serif; color: white; touch-action: none; }
+        
+        /* The Live Feed and the AI Result Image */
+        #videoElement, #resultImage { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: filter 0.1s, transform 0.1s; }
+        #resultImage { z-index: 5; display: none; } 
+        
+        /* Camera UI Overlays */
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; box-sizing: border-box;}
+        .top-bar { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;}
+        .status-badge { background: rgba(0,0,0,0.6); padding: 8px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; border: 1px solid #333; pointer-events: auto; text-transform: uppercase; letter-spacing: 1px;}
+        .online { color: #00ff88; border-color: #00ff88; }
+        .scanning { color: #ffaa00; border-color: #ffaa00; }
+        
+        /* Fullscreen Button */
+        #fs-btn { background: rgba(255, 255, 255, 0.1); color: white; border-color: rgba(255, 255, 255, 0.5); cursor: pointer; transition: 0.2s; }
+        #fs-btn:active { background: rgba(255, 255, 255, 0.3); }
+
+        /* Gesture Hint Text */
+        #gesture-hint { position: absolute; bottom: 30px; left: 0; width: 100%; text-align: center; color: rgba(255,255,255,0.5); font-size: 12px; pointer-events: none; }
+
+        /* Shutter Flash Effect */
+        #flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 20; opacity: 0; pointer-events: none; transition: opacity 0.1s; }
+    </style>
+</head>
+<body>
+
+    <video id="videoElement" autoplay playsinline></video>
+    <img id="resultImage" alt="AI Processed Result">
+    <canvas id="canvasElement" style="display:none;"></canvas>
+    <div id="flash"></div>
+
+    <div id="ui-layer">
+        <div class="top-bar">
+            <div id="status" class="status-badge online">● SENSOR ONLINE</div>
+            <div id="countdown" class="status-badge" style="color: white; border-color: white;">NEXT: 15s</div>
+            <div id="fs-btn" class="status-badge">⛶ FULL SCREEN</div>
+        </div>
+        <div id="gesture-hint">↕ Swipe: Brightness | ⤢ Pinch: Zoom</div>
+    </div>
+
+    <script>
+        const video = document.getElementById('videoElement');
+        const resultImg = document.getElementById('resultImage');
+        const canvas = document.getElementById('canvasElement');
+        const ctx = canvas.getContext('2d');
+        const statusTxt = document.getElementById('status');
+        const countdownTxt = document.getElementById('countdown');
+        const flash = document.getElementById('flash');
+        const fsBtn = document.getElementById('fs-btn');
+
+        // --- GLOBAL SETTINGS ---
+        let scanInterval = 15; 
+        let currentTimer = scanInterval;
+        
+        // --- GESTURE STATE VARIABLES ---
+        let currentZoom = 1;
+        let currentBright = 1;
+        let startDist = null; // For Pinch
+        let startY = null;    // For Swipe
+
+        // --- FULL SCREEN LOGIC ---
+        fsBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => console.log(err));
+                fsBtn.innerText = "✖ EXIT FULL SCREEN";
+            } else {
+                document.exitFullscreen();
+                fsBtn.innerText = "⛶ FULL SCREEN";
+            }
+        });
+
+        // --- TOUCH GESTURE LOGIC ---
+        function applyVisuals() {
+            video.style.transform = `scale(${currentZoom})`;
+            video.style.filter = `brightness(${currentBright})`;
+        }
+
+        window.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                // Two fingers: Calculate initial distance for pinch
+                startDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+            } else if (e.touches.length === 1) {
+                // One finger: Log starting Y position for swipe
+                startY = e.touches[0].pageY;
+            }
+        }, { passive: false });
+
+        window.addEventListener('touchmove', (e) => {
+            e.preventDefault(); // Stop the whole page from bouncing/scrolling
+
+            if (e.touches.length === 2 && startDist) {
+                // --- PINCH TO ZOOM ---
+                const newDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+                const diff = newDist - startDist;
+                // Adjust sensitivity here (0.01)
+                currentZoom = Math.min(Math.max(1, currentZoom + (diff * 0.01)), 3); 
+                startDist = newDist; 
+                applyVisuals();
+                
+            } else if (e.touches.length === 1 && startY !== null) {
+                // --- SWIPE TO BRIGHTEN ---
+                const newY = e.touches[0].pageY;
+                const deltaY = startY - newY; // Positive if swiping UP
+                // Adjust sensitivity here (0.005)
+                currentBright = Math.min(Math.max(0.2, currentBright + (deltaY * 0.005)), 2); 
+                startY = newY;
+                applyVisuals();
+            }
+        }, { passive: false });
+
+        window.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) startDist = null;
+            if (e.touches.length === 0) startY = null;
+        });
+
+        // --- UPGRADED CAMERA BOOT LOGIC ---
+        // Pushing for maximum resolution (4K) to catch distant faces
+        const constraints = { 
+            video: { 
+                facingMode: "environment", 
+                width: { ideal: 3840, min: 1920 }, // Demand 4K, fallback to 1080p
+                height: { ideal: 2160, min: 1080 },
+                advanced: [{ focusMode: "continuous" }] // Attempt to force hardware auto-focus
+            } 
+        };
+
+        navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+            video.srcObject = stream;
+            
+            // Attempt to grab the video track to apply hardware-level exposure if the browser allows it
+            const track = stream.getVideoTracks()[0];
+            const capabilities = track.getCapabilities();
+            
+            // If the browser/phone supports manual exposure control, try to set it to continuous
+            if (capabilities.exposureMode && capabilities.exposureMode.includes('continuous')) {
+                track.applyConstraints({ advanced: [{ exposureMode: 'continuous' }] })
+                     .catch(e => console.log("Exposure constraint not supported by this browser."));
+            }
+
+            video.onloadedmetadata = () => {
+                setInterval(tickTimer, 1000); 
+            };
+        }).catch(err => {
+            statusTxt.className = "status-badge";
+            statusTxt.innerText = "CAMERA ERROR";
+            statusTxt.style.color = "red";
+        });
+
+        function tickTimer() {
+            currentTimer--;
+            countdownTxt.innerText = `NEXT: ${currentTimer}s`;
+            
+            if (currentTimer <= 0) {
+                takePhotoAndProcess();
+                currentTimer = scanInterval;
+            }
+        }
+
+        // --- PROCESS & SEND DATA ---
+        function takePhotoAndProcess() {
+            flash.style.opacity = 1;
+            setTimeout(() => flash.style.opacity = 0, 150);
+            statusTxt.innerText = "● ANALYZING...";
+            statusTxt.className = "status-badge scanning";
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Apply the user's gesture brightness to the saved photo
+            ctx.filter = `brightness(${currentBright})`;
+            
+            // Calculate the user's pinch-zoom crop
+            const w = canvas.width / currentZoom;
+            const h = canvas.height / currentZoom;
+            const x = (canvas.width - w) / 2;
+            const y = (canvas.height - h) / 2;
+            
+            ctx.drawImage(video, x, y, w, h, 0, 0, canvas.width, canvas.height);
+            
+            const frameData = canvas.toDataURL('image/jpeg', 0.8); 
+            fetch('/process_sensor_frame', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: frameData })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.result_image) {
+                    resultImg.src = "data:image/jpeg;base64," + data.result_image;
+                    resultImg.style.display = "block";
+                    video.style.opacity = 0; 
+                    
+                    statusTxt.innerText = "● AI RESULT CONFIRMED";
+                    statusTxt.className = "status-badge online";
+
+                    setTimeout(() => {
+                        resultImg.style.display = "none";
+                        video.style.opacity = 1;
+                        statusTxt.innerText = "● SENSOR ONLINE";
+                    }, 4000);
+                }
+            }).catch(err => console.error(err));
+        }
+    </script>
+</body>
+</html>

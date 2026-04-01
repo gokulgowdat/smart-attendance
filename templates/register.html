@@ -1,35 +1,117 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Registration</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f6fa; color: #2f3640; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .register-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 100%; max-width: 450px; }
+        h2 { margin-top: 0; color: #0097e6; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input[type="text"], input[type="password"], select { width: 100%; padding: 10px; border: 1px solid #dcdde1; border-radius: 6px; box-sizing: border-box; }
+        input[type="file"] { width: 100%; padding: 8px; border: 1px dashed #0097e6; border-radius: 6px; background: #f0f9ff; box-sizing: border-box; }
+        .help-text { font-size: 12px; color: #718093; margin-top: 4px; display: block; }
+        .btn { width: 100%; padding: 12px; background: #0097e6; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+        .btn:hover { background: #0080c9; }
+        .flash { background: #ff7675; color: white; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; text-align: center; }
+        .login-link { text-align: center; margin-top: 15px; font-size: 14px; }
+        .login-link a { color: #0097e6; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
 
-{% block content %}
-<div class="container" style="max-width: 450px;">
-    <h2 style="margin-top: 0; text-align: center;">Register Account</h2>
+<div class="register-container">
+    <h2>Faculty Enrollment</h2>
     
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}
-          <div class="error">{{ message }}</div>
+          <div class="flash">{{ message }}</div>
         {% endfor %}
       {% endif %}
     {% endwith %}
 
-    <form method="POST" enctype="multipart/form-data">
-        <label>Full Name</label>
-        <input type="text" name="name" placeholder="Prof. Jane Doe" required>
+    <form action="/register" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="name" required placeholder="e.g., Dr. Alan Turing">
+        </div>
+        <div class="form-group">
+            <label>Username (System Label)</label>
+            <input type="text" name="username" required placeholder="e.g., alan_turing">
+            <span class="help-text">No spaces. This will be your login ID.</span>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" required>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+        <div class="form-group">
+            <label>Employee ID / Roll</label>
+            <input type="text" name="roll" required placeholder="e.g., FAC-1042">
+        </div>
+        <div class="form-group">
+            <label>Department</label>
+            <select name="department" required>
+                <option value="" disabled selected>Select Department...</option>
+                <option value="Computer Science & Engineering">Computer Science & Engineering</option>
+                <option value="Artificial Intelligence & ML">Artificial Intelligence & ML</option>
+                <option value="Information Science">Information Science</option>
+                <option value="Electronics & Communication">Electronics & Communication</option>
+                <option value="Electrical & Electronics">Electrical & Electronics</option>
+                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                <option value="Civil Engineering">Civil Engineering</option>
+                <option value="Basic Sciences">Basic Sciences</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Humanities & Social Sciences">Humanities & Social Sciences</option>
+                <option value="Business Administration">Business Administration</option>
+            </select>
+        </div>
         
-        <label>Username (Used for Login)</label>
-        <input type="text" name="username" placeholder="janedoe" required>
-        
-        <label>Password</label>
-        <input type="password" name="password" required>
-        
-        <label>Upload ID Photo (For AI Recognition)</label>
-        <input type="file" name="photo" accept="image/*" required style="border: none; padding: 0;">
-        
-        <button type="submit" style="background-color: #2563eb;">Create Account</button>
+        <div class="form-group">
+            <label>Subjects Taught (Select all that apply)</label>
+            <div style="max-height: 150px; overflow-y: auto; border: 1px solid #dcdde1; border-radius: 6px; padding: 10px; background: #ffffff;">
+                <script>
+                    const subjects = [
+                        "Engineering Mathematics I", "Engineering Mathematics II", "Engineering Physics", "Engineering Chemistry",
+                        "Soft Skills & Communication", "Constitution of India", "Environmental Studies",
+                        "Data Structures & Algorithms", "Operating Systems", "Database Management Systems",
+                        "Artificial Intelligence", "Machine Learning", "Computer Networks", "Software Engineering",
+                        "Basic Electrical Engineering", "Digital Logic Design", "Thermodynamics", "Strength of Materials"
+                    ];
+                    subjects.forEach(sub => {
+                        document.write(`<label style="display: block; font-weight: normal; margin-bottom: 5px; cursor: pointer; font-size: 13px;">
+                            <input type="checkbox" class="sub-check" value="${sub}" onchange="updateSubs()"> ${sub}
+                        </label>`);
+                    });
+
+                    function updateSubs() {
+                        const checks = document.querySelectorAll('.sub-check:checked');
+                        document.getElementById('hidden_subjects').value = Array.from(checks).map(c => c.value).join(', ');
+                    }
+                </script>
+            </div>
+            <input type="hidden" name="subjects" id="hidden_subjects">
+            <span class="help-text">These will appear in your class dashboard dropdown.</span>
+        </div>
+
+        <div class="form-group">
+            <label>AI Biometric Photos</label>
+            <input type="file" name="photos" accept="image/*" multiple required>
+            <span class="help-text">Select multiple clear photos from different angles for optimal accuracy.</span>
+        </div>
+
+        <button type="submit" class="btn">Create Account & Train AI</button>
     </form>
-    
-    <div style="text-align: center; margin-top: 20px;">
-        <a href="/" style="color: #6b7280; text-decoration: none;">← Back to Login</a>
+
+    <div class="login-link">
+        Already have an account? <a href="/">Log In Here</a>
     </div>
 </div>
-{% endblock %}
+
+</body>
+</html>

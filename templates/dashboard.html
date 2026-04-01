@@ -8,10 +8,10 @@
     <form method="POST">
         <label>Academic Year</label>
         <select name="year" required>
-            <option value="1">1st Year</option>
-            <option value="2">2nd Year</option>
-            <option value="3">3rd Year</option>
-            <option value="4">4th Year</option>
+            <option value="First Year">1st Year</option>
+            <option value="Second Year">2nd Year</option>
+            <option value="Third Year">3rd Year</option>
+            <option value="Final Year">4th Year</option>
         </select>
 
         <label>Sections (Select Multiple if needed)</label>
@@ -27,7 +27,16 @@
         </div>
 
         <label>Subject</label>
-        <input type="text" name="subject" placeholder="e.g. Data Structures" required>
+        <select name="subject" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 15px; box-sizing: border-box;">
+            <option value="" disabled selected>Select Your Assigned Subject...</option>
+            {% if my_subjects %}
+                {% for subject in my_subjects %}
+                    <option value="{{ subject }}">{{ subject }}</option>
+                {% endfor %}
+            {% else %}
+                <option value="" disabled>No subjects assigned in DB. Please update profile.</option>
+            {% endif %}
+        </select>
 
         <div style="display: flex; gap: 10px;">
             <div style="flex: 1;">
@@ -36,7 +45,15 @@
             </div>
             <div style="flex: 1;">
                 <label>Block</label>
-                <input type="text" name="block" placeholder="e.g. Main Block" required>
+                <select name="block" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box;">
+                    <option value="" disabled selected>Select Block...</option>
+                    <option value="Main Block">Main Block</option>
+                    <option value="Civil Block">Civil Block</option>
+                    <option value="Mechanical Block">Mechanical Block</option>
+                    <option value="Electrical Block">Electrical Block</option>
+                    <option value="Computer Science Block">Computer Science Block</option>
+                    <option value="Electronics Block">Electronics Block</option>
+                </select>
             </div>
         </div>
 

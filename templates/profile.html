@@ -1,37 +1,78 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <h2 style="margin-top: 0; border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">User Profile</h2>
+<div class="container" style="background-color: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color); max-width: 500px; margin: 40px auto; color: var(--text-color);">
     
+    <div style="text-align: center; margin-bottom: 30px;">
+        {% if profile_img %}
+            <img src="{{ profile_img }}" alt="Profile Picture" style="width: 130px; height: 130px; border-radius: 50%; object-fit: cover; border: 3px solid #0097e6; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+        {% else %}
+            <div style="width: 130px; height: 130px; border-radius: 50%; background-color: var(--bg-color); border: 2px dashed var(--border-color); margin: 0 auto; display: flex; align-items: center; justify-content: center; color: var(--text-color);">No Image</div>
+        {% endif %}
+        
+        <h2 style="margin: 15px 0 5px 0; color: var(--text-color);">{{ prof.name }}</h2>
+        <div style="color: #0097e6; font-weight: bold;">{{ prof.department }}</div>
+        <div style="font-size: 0.9rem; margin-top: 5px; opacity: 0.8;">Emp ID: {{ prof.roll }}</div>
+    </div>
+
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}
-          <div class="success">{{ message }}</div>
+          <div style="background-color: #27ae60; color: white; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 15px;">{{ message }}</div>
         {% endfor %}
       {% endif %}
     {% endwith %}
 
-    <div style="text-align: center; margin-bottom: 20px;">
-        <img src="/static/known_faces/faculty/{{ prof.username }}.jpg" alt="Profile Photo" 
-             style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--nav-bg);"
-             onerror="this.src='https://via.placeholder.com/120?text=No+Photo'">
-    </div>
+    <form method="POST" enctype="multipart/form-data">
+        
+        <label style="font-weight: bold; margin-bottom: 5px; display: block;">Update Profile Picture</label>
+        <input type="file" name="profile_img" accept="image/*" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-color); margin-bottom: 15px; box-sizing: border-box;">
 
-    <form method="POST">
-        <label>Full Name</label>
-        <input type="text" name="name" value="{{ prof.name }}" required>
-        
-        <label>Username</label>
-        <input type="text" name="username" value="{{ prof.username }}" required>
-        
-        <label>Password</label>
-        <input type="password" name="password" value="{{ prof.password }}" required>
-        
-        <label>Subjects Taught (e.g., Mathematics - Year 1, Sec A & B)</label>
-        <textarea name="subjects" rows="4" style="font-family: inherit;">{{ prof.subjects }}</textarea>
-        
-        <button type="submit" style="background-color: #3b82f6;">Update Profile</button>
+        <label style="font-weight: bold; margin-bottom: 5px; display: block;">Full Name</label>
+        <input type="text" name="name" value="{{ prof.name }}" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-color); margin-bottom: 15px; box-sizing: border-box;">
+
+        <label style="font-weight: bold; margin-bottom: 5px; display: block;">Username</label>
+        <input type="text" name="username" value="{{ prof.username }}" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-color); margin-bottom: 15px; box-sizing: border-box;">
+
+        <label style="font-weight: bold; margin-bottom: 5px; display: block;">Password</label>
+        <input type="password" name="password" value="{{ prof.password }}" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-color); margin-bottom: 15px; box-sizing: border-box;">
+
+        <label style="font-weight: bold; margin-bottom: 5px; display: block;">Subjects Taught</label>
+        <div style="max-height: 150px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 5px; padding: 10px; background-color: var(--input-bg); margin-bottom: 25px;">
+            <script>
+                const subjects = [
+                    "Engineering Mathematics I", "Engineering Mathematics II", "Engineering Physics", "Engineering Chemistry",
+                    "Soft Skills & Communication", "Constitution of India", "Environmental Studies",
+                    "Data Structures & Algorithms", "Operating Systems", "Database Management Systems",
+                    "Artificial Intelligence", "Machine Learning", "Computer Networks", "Software Engineering",
+                    "Basic Electrical Engineering", "Digital Logic Design", "Thermodynamics", "Strength of Materials"
+                ];
+                subjects.forEach(sub => {
+                    document.write(`<label style="display: block; font-weight: normal; margin-bottom: 5px; cursor: pointer; font-size: 0.95rem;">
+                        <input type="checkbox" class="sub-check" value="${sub}" onchange="updateSubs()"> ${sub}
+                    </label>`);
+                });
+
+                function updateSubs() {
+                    const checks = document.querySelectorAll('.sub-check:checked');
+                    document.getElementById('hidden_subjects').value = Array.from(checks).map(c => c.value).join(', ');
+                }
+
+                // Auto-check the boxes when the page loads
+                window.onload = function() {
+                    const savedSubsStr = document.getElementById('hidden_subjects').value;
+                    if(savedSubsStr) {
+                        const savedSubs = savedSubsStr.split(',').map(s => s.trim());
+                        document.querySelectorAll('.sub-check').forEach(cb => {
+                            if(savedSubs.includes(cb.value)) cb.checked = true;
+                        });
+                    }
+                };
+            </script>
+        </div>
+        <input type="hidden" name="subjects" id="hidden_subjects" value="{{ prof.subjects }}">
+
+        <button type="submit" style="width: 100%; padding: 12px; background: #0097e6; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem;">Update Profile</button>
     </form>
 </div>
 {% endblock %}

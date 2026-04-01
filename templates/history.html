@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container" style="max-width: 700px;">
+<div class="container" style="max-width: 700px; color: var(--text-color);">
     <h2 style="margin-top: 0;">Attendance History</h2>
     <p style="color: #6b7280; margin-bottom: 20px;">Select a date to view all classes conducted.</p>
 
     <form method="POST" style="display: flex; gap: 10px; margin-bottom: 30px;">
-        <input type="date" name="query_date" value="{{ selected_date }}" required style="margin: 0; flex: 1;">
-        <button type="submit" style="width: auto; padding: 0.75rem 1.5rem; background-color: #3b82f6;">Search</button>
+        <input type="date" name="query_date" value="{{ selected_date }}" required style="margin: 0; flex: 1; background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); padding: 8px; border-radius: 4px;">
+        <button type="submit" style="width: auto; padding: 0.75rem 1.5rem; background-color: #3b82f6; color: white; border: none; border-radius: 4px;">Search</button>
     </form>
 
     {% if sessions %}
@@ -27,13 +27,17 @@
             </div>
             
             <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 15px;">
-                <div style="font-weight: bold;">Total Present: <span style="color: #10b981;">{{ sess.present_count }}</span></div>
+                <div style="font-weight: bold;">
+                    Total Strength: <span style="color: #3b82f6;">{{ sess.total_students }}</span> | 
+                    Present: <span style="color: #10b981;">{{ sess.present_count }}</span> | 
+                    Absent: <span style="color: #ef4444;">{{ sess.absent_count }}</span>
+                </div>
                 <a href="/history/session/{{ sess.id }}" style="background-color: #1f2937; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; font-size: 0.9rem; font-weight: bold;">View Full Roster</a>
             </div>
         </div>
         {% endfor %}
     {% else %}
-        <div style="text-align: center; padding: 30px; color: #6b7280; border: 2px dashed var(--border-color); border-radius: 8px;">
+        <div style="text-align: center; padding: 30px; color: #6b7280; border: 2px dashed var(--border-color); border-radius: 8px; background-color: var(--card-bg);">
             No attendance records found for {{ selected_date }}.
         </div>
     {% endif %}
