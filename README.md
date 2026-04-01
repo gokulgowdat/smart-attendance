@@ -77,7 +77,7 @@ Whether you are on Windows, macOS, or Linux, follow these steps to build the arc
 
 **1. Clone the Repository**
 ```bash
-git clone [https://github.com/YOUR_GITHUB_USERNAME/smart-attendance.git](https://github.com/YOUR_GITHUB_USERNAME/smart-attendance.git)
+git clone https://github.com/gokulgowdat/smart-attendance.git
 cd smart-attendance
 ```
 
